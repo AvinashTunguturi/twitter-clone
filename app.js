@@ -70,33 +70,21 @@ const authenticateUserFollowing = async (request, response, next) => {
   const { userId } = request;
   const getFollowingsQuery = `
 
-  SELECT following_user_id 
-          FROM 
+  SELECT 
+    following_user_id 
+        FROM 
             follower 
-          WHERE 
+        WHERE 
             follower_user_id ='${userId[0].user_id}'
-INTERSECT
-SELECT user_id FROM tweet 
-WHERE tweet_id='${tweetId}';`;
+  INTERSECT
+    SELECT
+        user_id
+            FROM 
+                tweet 
+            WHERE
+                tweet_id='${tweetId}';`;
 
   const listOfFollowings = await twitterDB.all(getFollowingsQuery);
-  console.log(listOfFollowings);
-  /*
-  console.log(listOfFollowings);
-  console.log(Object.values(listOfFollowings));
-  myArr = [1, 4, 3];
-  console.log(...myArr);
-  const getFollowingTweetUserIdQuery = `
-  SELECT 
-	user_id
-  FROM
-	tweet
-WHERE user_id IN (1,4) AND tweet_id='${tweetId}';`;
-  const getFollowingTweetUserId = await twitterDB.get(
-    getFollowingTweetUserIdQuery
-  );
-  console.log(getFollowingTweetUserId);
-*/
 
   if (listOfFollowings.length === 0) {
     response.status(401);
@@ -202,14 +190,6 @@ app.get(
   authenticateToken,
   getUserId,
   async (request, response) => {
-    /*const { username } = request;
-  const getUserId = `
-        SELECT 
-          user_id FROM user 
-        WHERE username = '${username}';`;
-
-  const userId = await twitterDB.all(getUserId);*/
-
     const { userId } = request;
 
     const getFollowingsQuery = `
@@ -422,8 +402,8 @@ app.delete(
     } else {
       const deleteTweetQuery = `
            DELETE
-           FROM
-           tweet WHERE tweet_id = ${tweetId} ;`;
+            FROM
+              tweet WHERE tweet_id = ${tweetId} ;`;
 
       await twitterDB.run(deleteTweetQuery);
       response.send("Tweet Removed");
